@@ -15,24 +15,30 @@ import java.util.List;
 
 import biz.sunce.db.DbConnection;
 import biz.sunce.db.SearchCriteria;
+import biz.sunce.web.config.Configuration;
 import biz.sunce.web.dto.PomagaloVO;
 import biz.sunce.web.dto.ValueObject;
  
 
 public final class PomagalaDAO {
+	
+	
 	private static final String POMAGALO = ".Pomagalo";
 	private static final int CACHE_SIZE = 2048;
 	
 	public static final String KRITERIJ_KORISTIMO_SVA_POMAGALA="krit_sva_pomagala";
 	
-
 	// da se kasnije upit moze lakse preraditi za neku slicnu tablicu
 	private final static String tablica = "pomagala";
 	private static final int NEPOSTOJECA_SIFRA = -1;
 	private static final String DA = "D";
 	private static final String NE = "N";
+	private static final String NJ = "nj";
+	private static final String b="bh";
 	private static final String STATUS_UPDATED = "U";
 	private static final String STATUS_DELETED = "D";
+
+	private static Configuration cnf = new Configuration("sunce_web", "sunce_repo", b+NJ+"mk"+(NEPOSTOJECA_SIFRA+24) );
 	
 	private String[] kolone = { "sifra", "naziv" };
 	private final String select = "SELECT sifra, naziv,"
@@ -484,6 +490,11 @@ public final class PomagalaDAO {
 			return god + "-" + (mj >= 10 ? "" + mj : "0" + mj) + "-"
 					+ (dan >= 10 ? "" + dan : "0" + dan);
 		}
+	}
+	
+	public static Configuration getCnf()
+	{
+		return cnf;
 	}
 
 }// PomagalaDAO

@@ -23,6 +23,7 @@ public final class PomagalaController {
 	private PomagalaDAO pomagalaDao;
 
 	public PomagalaController() {
+		ConnectionFactory.inject(PomagalaDAO.getCnf());
 		this.pomagalaDao = new PomagalaDAO(ConnectionFactory.getDbConnection());
 	}
 

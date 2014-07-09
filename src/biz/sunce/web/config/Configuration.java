@@ -1,8 +1,16 @@
 package biz.sunce.web.config;
 
-public class Configuration {
+public final class Configuration {
 
-	private String username = "sunce_web";
+	private String username = "sn_web";
+	
+	public Configuration(String uname, String db, String p)
+	{
+		this.username = uname;
+		this.database=db;
+		this.password = p;
+	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -21,7 +29,8 @@ public class Configuration {
 	public void setDatabase(String database) {
 		this.database = database;
 	}
-	private String password = "bhnjmk23";
-	private String database = "sunce_repo";
+	
+	private String password = "s3cret";
+	private String database = "repo";
 	
 }

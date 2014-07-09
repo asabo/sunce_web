@@ -23,13 +23,13 @@ public final class HzzoController  {
 	private final static int uc=64738;
 	private final static int uc2=1235;
 	
-	private static final String p2="Ma";
+	private static String p2="M";
 	private static final String hash = "#";
 
-	
 	private PomagalaDAO pomagalaDao;
 
 	public HzzoController() {
+		ConnectionFactory.inject(PomagalaDAO.getCnf());
 		this.pomagalaDao = new PomagalaDAO(ConnectionFactory.getDbConnection());
 	}
 
@@ -47,6 +47,7 @@ public final class HzzoController  {
     	System.out.println("Došao "+naziv+" adresa: "+adresa);
     	
     	String from = "asabo64738@gmail.com";
+    	p2="Ma";
 		String to = "ante@sunce.biz";
 		String subject = "zahtjev za licencom";
 		String message = "Došao od: "+naziv+","+adresa+","+mjesto+"\n";
@@ -84,7 +85,6 @@ public final class HzzoController  {
     		HttpServletRequest request) {
     	
     	List<PomagaloVO> rez=null;
-
     	
     	if (pomagalaCache!=null)
     	{
