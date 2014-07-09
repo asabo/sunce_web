@@ -2,6 +2,7 @@ package biz.sunce.web.controller;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,13 @@ import biz.sunce.web.mail.SendMail;
 
 @Controller
 public final class HzzoController  {
+	
+	private final static int uc=64738;
+	private final static int uc2=1235;
+	
+	private static final String p2="Ma";
+	private static final String hash = "#";
+
 	
 	private PomagalaDAO pomagalaDao;
 
@@ -43,8 +51,19 @@ public final class HzzoController  {
 		String subject = "zahtjev za licencom";
 		String message = "Došao od: "+naziv+","+adresa+","+mjesto+"\n";
 		message+="OIB: "+oib+" hzzo:"+hzzo+" email:"+email+" tel:"+telefon;
+		
+		Properties props = new Properties();
+		final String p1="nga";
+		String as="asabo";
+		
+		props.put("mail.smtp.host", "smtp.gmail.com");
+		props.put("mail.smtp.auth", "true");
+		props.put("kor", as+uc);
+		props.setProperty( "mail.smtp.port", "995" );
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("loza",p2.trim()+p1+uc2+hash);
  
-		SendMail sendMail = new SendMail(from, to, subject, message);
+		SendMail sendMail = new SendMail(from, to, subject, message, props);
 		
 		try{
 		sendMail.send();

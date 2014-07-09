@@ -12,36 +12,32 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
  
-public class SendMail {
- 
-	private static final String USER = "asabo64738@gmail.com";
+public final class SendMail {
+ 	 
 	private String from;
 	private String to;
 	private String subject;
 	private String text;
+	private Properties props;
  
-	public SendMail(String from, String to, String subject, String text){
+	public SendMail(String from, String to, String subject, String text, Properties props){
 		this.from = from;
 		this.to = to;
 		this.subject = subject;
 		this.text = text;
+		this.props = props;
 	}
  
 	public void send(){
  
-		Properties props = new Properties();
-		final String pas1="nga";
-		final String pas2="Ma";
-	
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.auth", "true");
-		props.setProperty( "mail.smtp.port", "995" );
-		props.put("mail.smtp.starttls.enable", "true");
+		 final String u = props.getProperty("kor");
+		 final String p = props.getProperty("loza");
+
 		Session mailSession = Session.getDefaultInstance(props,
 		new javax.mail.Authenticator() {
 		protected PasswordAuthentication getPasswordAuthentication() {
 		return new PasswordAuthentication(
-		USER, pas2+pas1+1235+"#");//SenderID and Password.
+		u, p);
 		}
 		});
 		
@@ -64,11 +60,7 @@ public class SendMail {
 			simpleMessage.setRecipient(RecipientType.TO, toAddress);
 			simpleMessage.setSubject(subject);
 			simpleMessage.setText(text);
- 
-			//Transport transport = mailSession.getTransport("smtp");  
-			//transport.connect("smtp.gmail.com", USER, pas2+pas1+123+"!");  
-			//transport.send(simpleMessage);
-			
+  		 
 			Transport.send(simpleMessage);
 		} catch (MessagingException e) {
 			throw new RuntimeException(e);
