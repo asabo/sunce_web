@@ -320,8 +320,8 @@ public final class PomagalaDAO {
 					+ "    ) " + ocnoPomagaloDodatak;
 
 		if (dKljuc != null)
-			upit += " and (updated>'" + cks + "'"
-					+ "    or created>'" + cks + "'"
+			upit += " and (updated>str_to_date('" + cks + "', '%Y-%m-%d %H:%i:%s.%f')"
+					+ "    or created>str_to_date('" + cks + "', '%Y-%m-%d %H:%i:%s.%f')"
 					+ "    ) " + ocnoPomagaloDodatak;
 
 		

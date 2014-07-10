@@ -1,5 +1,7 @@
 package biz.sunce.web.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -28,17 +30,29 @@ public final class PomagalaController {
 	}
 
 	private List<PomagaloVO> pomagalaCache=null;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
 	
 	@RequestMapping(value = "/rest/v1/pomagala", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody
 	List<PomagaloVO> getPomagala(
-			@RequestParam(value = "timestamp", defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") Date vrijeme) {
+			@RequestParam(value = "timestamp", defaultValue = "") String vrijemeStr) {
 
-		if (vrijeme==null && pomagalaCache!=null)
+		if (vrijemeStr==null && pomagalaCache!=null)
 			return pomagalaCache;
+		
+		
+		Date vrijeme = null;
+		
+		try {
+			vrijeme = sdf.parse(vrijemeStr);
+		} catch (ParseException e1) {
+			return null;
+		}
 		
 		Object kljuc = null;
 		List<PomagaloVO> rezultat = null;
+		
 		try {
 			kljuc = vrijeme;
 			rezultat = this.pomagalaDao.findAll(kljuc);
