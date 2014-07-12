@@ -68,7 +68,7 @@ import="java.util.List,biz.sunce.web.dto.PomagaloVO"
 <td>
 <p>
 <table class='lista'>
-<tr><th>sifra<th>naziv<th>cijena</tr>
+<tr><th>sifra<th>naziv<th>cijena art.</tr>
 <%
 List<PomagaloVO> rez=null;
 rez=(List<PomagaloVO>)request.getAttribute("pomagala");

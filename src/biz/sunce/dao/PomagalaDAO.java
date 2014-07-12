@@ -23,6 +23,8 @@ import biz.sunce.web.dto.ValueObject;
 public final class PomagalaDAO {
 	
 	
+	private static final String SUNCE_REPO = "sunce_repo";
+	private static final String SUNCE_WEB = "sunce_web";
 	private static final String POMAGALO = ".Pomagalo";
 	private static final int CACHE_SIZE = 2048;
 	
@@ -38,7 +40,7 @@ public final class PomagalaDAO {
 	private static final String STATUS_UPDATED = "U";
 	private static final String STATUS_DELETED = "D";
 
-	private static Configuration cnf = new Configuration("sunce_web", "sunce_repo", b+NJ+"mk"+(NEPOSTOJECA_SIFRA+24) );
+	private static Configuration cnf = new Configuration(SUNCE_WEB, SUNCE_REPO, b+NJ+"mk"+(NEPOSTOJECA_SIFRA+24) );
 	
 	private String[] kolone = { "sifra", "naziv" };
 	private final String select = "SELECT sifra, naziv,"

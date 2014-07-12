@@ -1,6 +1,7 @@
 package biz.sunce.web.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -92,10 +93,16 @@ public final class HzzoController  {
     	}
     	else    	
     	try {
-			 rez = pomagalaDao.findAll(timestamp);
+			 rez = pomagalaDao.findAll(null);
 			 pomagalaCache = rez;
     	} catch (SQLException e) {
-		  rez=null;
+    		rez = new ArrayList<PomagaloVO>();
+			PomagaloVO p= new PomagaloVO();
+			p.setSifra(-1);
+			p.setNaziv(e.toString());
+			p.setCijenaSPDVom(0);
+			
+			rez.add(p);
 		  pomagalaCache=null;
 		}
 	 
