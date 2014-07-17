@@ -18,7 +18,8 @@
     tagName: 'tr', // name of tag to be created
     // `ItemView`s now respond to two clickable actions for each `Item`: swap and delete.
     events: {
-      'click span.delete': 'remove'
+      'click span.delete': 'remove',
+      'click td.naziv': 'uredi'
     },
     // `initialize()` now binds model change/removal to the corresponding handlers below.
     initialize: function(){
@@ -32,11 +33,39 @@
       //this.$el.html(this.template(this.model.attributes));
       $(this.el).html('<td>'+
     		  this.model.get('sifraArtikla')+'</td>'+
-    		  '<td>'+this.model.get('naziv')+'</td>'+
+    		  '<td class="naziv"><span id="nazivSpan" class="nazivSpan">'+this.model.get('naziv')+'</span></td>'+
     		  '<td align="right">'+(this.model.get('cijenaSPDVom')/100.0)+'</td>'+
-    		  '');
+    		  '<td><span class="delete">del</span>');
       return this; // for chainable calls, like .render().el
     },
+    uredi:function(evt) {
+        var elem = evt.currentTarget;
+                 
+        var nazivSpan = $("#nazivSpan", elem);
+        var nazivInput = $("#nazivInput", nazivSpan);
+    
+        if (nazivInput.length > 0)        	
+        	return;
+        
+        nazivSpan.html('<input id="nazivInput" style="width:100%;" value="'+this.model.get('naziv')+'"></input>');
+        
+        nazivInput = $("#nazivInput", nazivSpan);
+        nazivInput.focus();
+        
+        var model=this.model;
+        
+        nazivInput.focusout( "focuslost", function(evt) {
+        	 
+        	var nazivSpan = this.parentNode;
+        	var tekst=this.value;
+         
+        	nazivSpan.innerText=tekst;
+        	model.set('naziv',tekst);
+        	model.save();
+        	});
+         
+     }
+    ,
     // `unrender()`: Makes Model remove itself from the DOM.
     unrender: function(){
       $(this.el).remove();

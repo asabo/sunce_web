@@ -1,5 +1,6 @@
 package biz.sunce.web.controller;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,6 +9,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -88,4 +92,61 @@ public final class PomagalaController {
 
 		return rezultat;
 	}
+	
+	
+	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody
+	PomagaloVO getPomagaloPoIdu(
+			@PathVariable String idStr) {
+		try {
+			
+			
+			PomagaloVO rezultat = this.pomagalaDao.read(idStr);
+
+			return rezultat;
+
+		} catch (Exception e) {
+			PomagaloVO p= new PomagaloVO();
+			p.setSifra(-1);
+			p.setNaziv(e.toString());
+			p.setCijenaSPDVom(0);
+			
+			return p;			
+		}
+	}
+	
+	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.POST, produces = "application/json")
+	public @ResponseBody
+	boolean updatePomagalo(
+			@RequestBody PomagaloVO pomagalo) {
+		try {
+			
+			
+			 boolean rez = this.pomagalaDao.update(pomagalo);
+
+			return rez;
+
+		} catch (Exception e) {
+			
+			return false;			
+		}
+	}
+	
+	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.PUT, produces = "application/json")
+	@ExceptionHandler(SQLException.class)
+	public @ResponseBody
+	boolean updatePomagaloPUT(
+			@RequestBody PomagaloVO pomagalo) throws SQLException  {
+	 
+			
+			 boolean rez = this.pomagalaDao.update(pomagalo);
+			 
+			 if (rez)
+				 this.pomagalaCache = null;
+
+			return true;
+
+		 
+	}
+	
 }

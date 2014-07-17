@@ -457,7 +457,7 @@ public final class ConnectionBroker implements Runnable, DbConnection {
 
 		try {
 
-			Class.forName(dbDriver).newInstance();
+			Class.forName(dbDriver);
 
 			connPool[i] = DriverManager.getConnection(dbServer, dbLogin,
 					dbPassword);
@@ -471,14 +471,11 @@ public final class ConnectionBroker implements Runnable, DbConnection {
 
 			System.out.println("GRESKA! ClassNotFound Exception: " + e2);
 			e2.printStackTrace();
-		} catch (InstantiationException ex) {
-			System.out.println("GRESKA! InstantiationException: " + ex);
+		} catch ( Exception ex) {
+			System.out.println("GRESKA!  Exception: " + ex);
 			ex.printStackTrace();
 
-		} catch (IllegalAccessException ex) {
-			System.out.println("GRESKA! IllegalAccessException: " + ex);
-			ex.printStackTrace();
-		}
+		}  
 	} // createConn
 
 	/**

@@ -18,7 +18,7 @@ public final class ConnectionFactory {
 		if (broker == null) {
 			try {
 				broker = new ConnectionBroker("com.mysql.jdbc.Driver",
-						"jdbc:mysql://localhost/sunce_repo", c.getUsername(),
+						"jdbc:mysql://localhost:3306/sunce_repo?characterEncoding=utf-8", c.getUsername(),
 						c.getPassword(), 2, 10, null, 
 						600000);
 			} catch (IOException e) {

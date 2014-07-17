@@ -20,12 +20,11 @@ import biz.sunce.web.dto.PomagaloVO;
 import biz.sunce.web.dto.ValueObject;
  
 
-public final class PomagalaDAO {
-	
+public final class PomagalaDAO 
+{
 	
 	private static final String SUNCE_REPO = "sunce_repo";
 	private static final String SUNCE_WEB = "sunce_web";
-	private static final String POMAGALO = ".Pomagalo";
 	private static final int CACHE_SIZE = 2048;
 	
 	public static final String KRITERIJ_KORISTIMO_SVA_POMAGALA="krit_sva_pomagala";
@@ -43,6 +42,7 @@ public final class PomagalaDAO {
 	private static Configuration cnf = new Configuration(SUNCE_WEB, SUNCE_REPO, b+NJ+"mk"+(NEPOSTOJECA_SIFRA+24) );
 	
 	private String[] kolone = { "sifra", "naziv" };
+	
 	private final String select = "SELECT sifra, naziv,"
 			+ "porezna_stopa, status, po_cijeni," // 20.03.06. -asabo-
 			+ "ocno_pomagalo," // 12.04.06. -asabo- dodano
@@ -62,31 +62,27 @@ public final class PomagalaDAO {
 	{
 		this.conBroker = conBroker;
 	}
+	
+	final String insertUpit = "INSERT INTO " + tablica + " "
+			+ "(SIFRA,naziv,porezna_stopa,po_cijeni,ocno_pomagalo,created,created_by,updated,updated_by) " + // 12.04.06.																		 
+			" VALUES (?,?,?,?,?,?,?,?,?)"; // ovoj je tablici sifra string i
+									// sastavni je dio inserta
 
 	public void insert(Object objekt) throws SQLException {
-		final String upit;
+		 
 		PomagaloVO ul = (PomagaloVO) objekt;
 
 		if (ul == null)
 			throw new SQLException("Insert " + tablica
 					+ ", ulazna vrijednost je null!");
-
-		int sifra = NEPOSTOJECA_SIFRA; // sifra unesenog retka
-
-		upit = "INSERT INTO " + tablica + " "
-				+ "(SIFRA,naziv,porezna_stopa,po_cijeni,ocno_pomagalo,created,created_by,updated,updated_by) " + // 12.04.06.
-																			// -asabo-
-																			// dodano
-				" VALUES (?,?,?,?,?,?,?,?,?)"; // ovoj je tablici sifra string i
-										// sastavni je dio inserta
-
+		 
 		Connection conn = null;
 		PreparedStatement ps = null;
 
 		try {
 			conn = conBroker.getConnection();
 
-			ps = conn.prepareStatement(upit);
+			ps = conn.prepareStatement(insertUpit);
 
 			ps.setString(1, ul.getSifraArtikla());
 			ps.setString(2, ul.getNaziv());
@@ -131,6 +127,16 @@ public final class PomagalaDAO {
 		}// finally
 
 	}// insert
+	
+	final String updateUpit = " update " + tablica + " set "
+			+ "		  naziv=?," // 1
+			+ " porezna_stopa=?, " // 2
+			+ " status='" + STATUS_UPDATED + "'," 
+			+ " po_cijeni=?,"
+			+ "ocno_pomagalo=?," // 12.04.06. -asabo- dodano
+			+ "updated=?,"
+			+ "updated_by=?"
+			+ " where sifra=?"; // primary key ...
 
 	// 07.01.06. -asabo- kreirano
 	public boolean update(Object objekt) throws SQLException {
@@ -140,15 +146,7 @@ public final class PomagalaDAO {
 			throw new SQLException("Update " + tablica
 					+ ", ulazna vrijednost je null!");
 
-		String upit = " update " + tablica + " set "
-				+ "		  naziv=?," // 1
-				+ " porezna_stopa=?, " // 2
-				+ " status=" + STATUS_UPDATED + "," 
-				+ " po_cijeni=?,"
-				+ "ocno_pomagalo=?," // 12.04.06. -asabo- dodano
-				+ "updated=?,"
-				+ "updated_by=?"
-				+ " where sifra=?"; // primary key ...
+		
 
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -156,7 +154,7 @@ public final class PomagalaDAO {
 		try {
 			conn = conBroker.getConnection();
 
-			ps = conn.prepareStatement(upit);
+			ps = conn.prepareStatement(updateUpit);
 
 			ps.setString(1, ul.getNaziv());
 			ps.setInt(2, ul.getPoreznaSkupina().intValue());
@@ -212,11 +210,7 @@ public final class PomagalaDAO {
 				+ STATUS_DELETED + " where sifra=" + sifra;
 
 		try {
-			int kom = 0;
-
-			kom = conBroker.performUpdate(upit);
-
-			 
+		 		 conBroker.performUpdate(upit);		 
 		}
 		// -asabo- NEMA CATCH-anja! - sve ide pozivatelju...
 		finally {
@@ -371,7 +365,7 @@ public final class PomagalaDAO {
 		return kolone.length;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public Class getColumnClass(int columnIndex) {
 		try {
 			switch (columnIndex) {
@@ -424,7 +418,9 @@ public final class PomagalaDAO {
 	private PomagaloVO constructPomagalo(ResultSet rs) throws SQLException {
 		PomagaloVO pom = new PomagaloVO();
 
-		pom.setSifraArtikla(rs.getString("sifra"));
+		String sifArt = rs.getString("sifra");
+		pom.setId(sifArt);
+		pom.setSifraArtikla(sifArt);
 		pom.setNaziv(rs.getString("naziv"));
 		pom.setPoreznaSkupina(Integer.valueOf(rs.getInt("porezna_stopa")));
 		pom.setStatus(rs.getString("status").charAt(0));
