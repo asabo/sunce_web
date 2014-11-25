@@ -6,20 +6,31 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.apache.log4j.Logger;
 
 import biz.sunce.dao.PomagalaDAO;
 import biz.sunce.db.ConnectionFactory;
+import biz.sunce.web.app.AppConfig;
 import biz.sunce.web.dto.PomagaloVO;
 import biz.sunce.web.mail.SendMail;
 
 
-@Controller
+@Path("/v1/")
 public final class HzzoController  {
+
+	private final static Logger LOG = Logger.getLogger(HzzoController.class);
+	
+	@Context  UriInfo uriInfo;  
+	@Context  HttpServletRequest request; 
 	
 	private final static int uc=64738;
 	private final static int uc2=1235;
@@ -30,20 +41,22 @@ public final class HzzoController  {
 	private PomagalaDAO pomagalaDao;
 
 	public HzzoController() {
-		ConnectionFactory.inject(PomagalaDAO.getCnf());
+		ConnectionFactory.inject(AppConfig.getCnf());
 		this.pomagalaDao = new PomagalaDAO(ConnectionFactory.getDbConnection());
 	}
 
-    @RequestMapping(value="/registracija.do", method = RequestMethod.POST)
+	@POST
+	@Path(value="registracija.do")
     public String registracija(
-    		@RequestParam(value="naziv") String naziv,
-    		@RequestParam(value="adresa") String adresa,
-    		@RequestParam(value="mjesto") String mjesto,
-    		@RequestParam(value="oib") String oib,
-    		@RequestParam(value="hzzo") String hzzo,
-    		@RequestParam(value="email") String email,
-    		@RequestParam(value="telefon") String telefon,
-    		HttpServletRequest request) {
+    		@QueryParam(value="naziv") String naziv,
+    		@QueryParam(value="adresa") String adresa,
+    		@QueryParam(value="mjesto") String mjesto,
+    		@QueryParam(value="oib") String oib,
+    		@QueryParam(value="hzzo") String hzzo,
+    		@QueryParam(value="email") String email,
+    		@QueryParam(value="telefon") String telefon
+    		) 
+	{
     	
     	System.out.println("Došao "+naziv+" adresa: "+adresa);
     	
@@ -80,10 +93,12 @@ public final class HzzoController  {
 
     List<PomagaloVO> pomagalaCache=null;
     
-    @RequestMapping(value="/pomagala.do", method = RequestMethod.GET)
+    @GET
+    @Path(value="/pomagala.do")
+	@Produces(MediaType.APPLICATION_JSON)
     public String pomagala(
-    		@RequestParam(value="timestamp", defaultValue="") String timestamp,
-    		HttpServletRequest request) {
+    		@QueryParam(value="timestamp") String timestamp
+    		) {
     	
     	List<PomagaloVO> rez=null;
     	
@@ -109,7 +124,5 @@ public final class HzzoController  {
 		request.setAttribute("pomagala", rez);
         return "pomagala";
     }
-
-
 
 }

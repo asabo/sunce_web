@@ -7,37 +7,54 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 import biz.sunce.dao.PomagalaDAO;
 import biz.sunce.db.ConnectionFactory;
+import biz.sunce.web.app.AppConfig;
 import biz.sunce.web.dto.PomagaloVO;
 
-@Controller
-public final class PomagalaController {
+@Path("/v1/pomagala/")
+public final class PomagalaController 
+{
 
+	private final static Logger LOG = Logger.getLogger(PomagalaController.class);
+	
+	@Context  UriInfo uriInfo;  
+	@Context  HttpServletRequest request; 
+	
 	private PomagalaDAO pomagalaDao;
 
 	public PomagalaController() {
-		ConnectionFactory.inject(PomagalaDAO.getCnf());
+		System.out.println("PomagalaController start");
+		ConnectionFactory.inject(AppConfig.getCnf());
 		this.pomagalaDao = new PomagalaDAO(ConnectionFactory.getDbConnection());
+		LOG.info("Podigli smo PomagalaController");
+		 
 	}
 
 	private List<PomagaloVO> pomagalaCache = null;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-	@RequestMapping(value = "/rest/v1/pomagala", method = RequestMethod.GET, produces = "application/json")
-	public @ResponseBody
+	@GET
+	@Produces(MediaType.APPLICATION_JSON+"; Content-Encoding=UTF-8")
+	@Path(value = "" ) 
+	public  
 	List<PomagaloVO> getPomagala(
-			@RequestParam(value = "timestamp", defaultValue = "") String vrijemeStr) {
+			@QueryParam(value = "timestamp") String vrijemeStr) {
 
 		boolean vrijemeStrEmpty = StringUtils.isEmpty( vrijemeStr );
 		
@@ -83,7 +100,7 @@ public final class PomagalaController {
 		
 		if (rezultat==null || rezultat.size()==0)
 		{
-			rezultat = new ArrayList<PomagaloVO>();
+			rezultat = new ArrayList<PomagaloVO>(1);
 			PomagaloVO p= new PomagaloVO();
 			p.setSifra(-1);
 			p.setNaziv("(nema)");
@@ -94,10 +111,12 @@ public final class PomagalaController {
 	}
 	
 	
-	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.GET, produces = "application/json")
-	public @ResponseBody
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path(value = "{id}")
+	public
 	PomagaloVO getPomagaloPoIdu(
-			@PathVariable String idStr) {
+			@PathParam("id") String idStr) {
 		try {
 			
 			
@@ -115,10 +134,11 @@ public final class PomagalaController {
 		}
 	}
 	
-	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.POST, produces = "application/json")
-	public @ResponseBody
-	boolean updatePomagalo(
-			@RequestBody PomagaloVO pomagalo) {
+	@Produces(MediaType.APPLICATION_JSON)
+	@POST
+	@Path(value = "{id}")
+	public boolean updatePomagalo(
+			 PomagaloVO pomagalo) {
 		try {
 			
 			
@@ -132,11 +152,12 @@ public final class PomagalaController {
 		}
 	}
 	
-	@RequestMapping(value = "/rest/v1/pomagala/{id}", method = RequestMethod.PUT, produces = "application/json")
-	@ExceptionHandler(SQLException.class)
-	public @ResponseBody
+	@Produces(MediaType.APPLICATION_JSON)
+	@PUT
+	@Path(value = "{id}")	 
+	public 
 	boolean updatePomagaloPUT(
-			@RequestBody PomagaloVO pomagalo) throws SQLException  {
+			 PomagaloVO pomagalo) throws SQLException  {
 	 
 			
 			 boolean rez = this.pomagalaDao.update(pomagalo);
@@ -145,8 +166,6 @@ public final class PomagalaController {
 				 this.pomagalaCache = null;
 
 			return true;
-
-		 
 	}
 	
 }
